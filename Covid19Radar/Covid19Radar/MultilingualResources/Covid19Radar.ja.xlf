@@ -552,7 +552,7 @@
         </trans-unit>
         <trans-unit id="SettingsPageButton1" translate="yes" xml:space="preserve">
           <source>License</source>
-          <target state="translated">ライセンス…</target>
+          <target state="translated">ライセンス(英語表記のみ)…</target>
           <note from="MultilingualBuild" annotates="source" priority="2">ライセンス…</note>
         </trans-unit>
         <trans-unit id="SettingsPageLabel1" translate="yes" xml:space="preserve">
