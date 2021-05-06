@@ -31,6 +31,14 @@ namespace Covid19Radar.ViewModels
             MenuItems = new ObservableCollection<MainMenuModel>();
             MenuItems.Add(new MainMenuModel()
             {
+                Icon = "\uf013",
+                PageName = nameof(DebugPage),
+                Title = "debug",
+                IconColor = "#019AE8",
+                TextColor = "#000"
+            });
+            MenuItems.Add(new MainMenuModel()
+            {
                 Icon = "\uf965",
                 PageName = nameof(HomePage),
                 Title = Resources.AppResources.HomePageTitle,

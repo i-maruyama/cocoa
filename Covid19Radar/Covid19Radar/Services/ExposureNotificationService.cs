@@ -25,7 +25,11 @@ namespace Covid19Radar.Services
         void RemoveConfiguration();
 
         long GetLastProcessTekTimestamp(string region);
+        long GetLastProcessTekListCount(string region);
+        long GetLastDownloadCount(string region);
         void SetLastProcessTekTimestamp(string region, long created);
+        void SetLastProcessTekListCount(string region, long created);
+        void SetLastDownloadCount(string region, long created);
         void RemoveLastProcessTekTimestamp();
 
         Task FetchExposureKeyAsync();
@@ -175,6 +179,38 @@ namespace Covid19Radar.Services
             loggerService.EndMethod();
             return result;
         }
+        public long GetLastProcessTekListCount(string region)
+        {
+            loggerService.StartMethod();
+            var result = 0L;
+            var jsonString = preferencesService.GetValue<string>(PreferenceKey.LastProcessTekListCount, null);
+            if (!string.IsNullOrEmpty(jsonString))
+            {
+                var dict = JsonConvert.DeserializeObject<Dictionary<string, long>>(jsonString);
+                if (dict.ContainsKey(region))
+                {
+                    result = dict[region];
+                }
+            }
+            loggerService.EndMethod();
+            return result;
+        }
+        public long GetLastDownloadCount(string region)
+        {
+            loggerService.StartMethod();
+            var result = 0L;
+            var jsonString = preferencesService.GetValue<string>(PreferenceKey.LastDownloadCount, null);
+            if (!string.IsNullOrEmpty(jsonString))
+            {
+                var dict = JsonConvert.DeserializeObject<Dictionary<string, long>>(jsonString);
+                if (dict.ContainsKey(region))
+                {
+                    result = dict[region];
+                }
+            }
+            loggerService.EndMethod();
+            return result;
+        }
 
         public void SetLastProcessTekTimestamp(string region, long created)
         {
@@ -193,11 +229,47 @@ namespace Covid19Radar.Services
             preferencesService.SetValue(PreferenceKey.LastProcessTekTimestamp, JsonConvert.SerializeObject(newDict));
             loggerService.EndMethod();
         }
+        public void SetLastProcessTekListCount(string region, long created)
+        {
+            loggerService.StartMethod();
+            var jsonString = preferencesService.GetValue<string>(PreferenceKey.LastProcessTekListCount, null);
+            Dictionary<string, long> newDict;
+            if (!string.IsNullOrEmpty(jsonString))
+            {
+                newDict = JsonConvert.DeserializeObject<Dictionary<string, long>>(jsonString);
+            }
+            else
+            {
+                newDict = new Dictionary<string, long>();
+            }
+            newDict[region] = created;
+            preferencesService.SetValue(PreferenceKey.LastProcessTekListCount, JsonConvert.SerializeObject(newDict));
+            loggerService.EndMethod();
+        }
+        public void SetLastDownloadCount(string region, long created)
+        {
+            loggerService.StartMethod();
+            var jsonString = preferencesService.GetValue<string>(PreferenceKey.LastDownloadCount, null);
+            Dictionary<string, long> newDict;
+            if (!string.IsNullOrEmpty(jsonString))
+            {
+                newDict = JsonConvert.DeserializeObject<Dictionary<string, long>>(jsonString);
+            }
+            else
+            {
+                newDict = new Dictionary<string, long>();
+            }
+            newDict[region] = created;
+            preferencesService.SetValue(PreferenceKey.LastDownloadCount, JsonConvert.SerializeObject(newDict));
+            loggerService.EndMethod();
+        }
 
         public void RemoveLastProcessTekTimestamp()
         {
             loggerService.StartMethod();
             preferencesService.RemoveValue(PreferenceKey.LastProcessTekTimestamp);
+            preferencesService.RemoveValue(PreferenceKey.LastProcessTekListCount);
+            preferencesService.RemoveValue(PreferenceKey.LastDownloadCount);
             loggerService.EndMethod();
         }
 

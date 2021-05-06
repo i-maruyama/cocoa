@@ -72,7 +72,7 @@ namespace Covid19Radar.Services
             }
 
             loggerService.EndMethod();
-            return false;
+            return true;// debug
         }
 
         public async Task<HttpStatusCode> PutSelfExposureKeysAsync(DiagnosisSubmissionParameter request)

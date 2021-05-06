@@ -25,11 +25,11 @@ namespace Covid19Radar.Services
     [Xamarin.Forms.Internals.Preserve] // Ensure this isn't linked out
     public class ExposureNotificationHandler : IExposureNotificationHandler
     {
+	private long _tekListCount;
         private ILoggerService LoggerService => ServiceLocator.Current.GetInstance<ILoggerService>();
         private IHttpDataService HttpDataService => ServiceLocator.Current.GetInstance<IHttpDataService>();
         private IExposureNotificationService ExposureNotificationService => ServiceLocator.Current.GetInstance<IExposureNotificationService>();
         private IUserDataService UserDataService => ServiceLocator.Current.GetInstance<IUserDataService>();
-
         public ExposureNotificationHandler()
         {
             // Do not initialize the field variables here.
@@ -166,11 +166,14 @@ namespace Covid19Radar.Services
                         continue;
                     }
 
+                    exposureNotificationService.SetLastProcessTekTimestamp(serverRegion, newCreated);
+                    exposureNotificationService.SetLastProcessTekListCount(serverRegion, _tekListCount);
+                    exposureNotificationService.SetLastDownloadCount(serverRegion, downloadedFiles.Count);
+                    loggerService.Info($"region: {serverRegion}, lastCreated: {newCreated} from Downloaded files: {downloadedFiles.Count}, tekListCount: {_tekListCount}");
+
                     loggerService.Info("C19R Submit Batches");
                     await submitBatches(downloadedFiles);
 
-                    exposureNotificationService.SetLastProcessTekTimestamp(serverRegion, newCreated);
-                    loggerService.Info($"region: {serverRegion}, lastCreated: {newCreated}");
 
                     // delete all temporary files
                     foreach (var file in downloadedFiles)
@@ -225,6 +228,7 @@ namespace Covid19Radar.Services
             var httpDataService = HttpDataService;
 
             List<TemporaryExposureKeyExportFileModel> tekList = await httpDataService.GetTemporaryExposureKeyList(region, cancellationToken);
+	    _tekListCount=tekList.Count;
             if (tekList.Count == 0)
             {
                 loggerService.EndMethod();
@@ -261,7 +265,7 @@ namespace Covid19Radar.Services
                     Debug.WriteLine($"C19R FETCH DIAGKEY {tmpFile}");
                 }
             }
-            loggerService.Info($"Downloaded files: {downloadedFiles.Count()}");
+            loggerService.Info($"Downloaded files: {downloadedFiles.Count()}, tekList.Count: {tekList.Count}");
 
             loggerService.EndMethod();
 

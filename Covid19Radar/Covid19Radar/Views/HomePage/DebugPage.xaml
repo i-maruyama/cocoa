@@ -1,0 +1,212 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!-- This Source Code Form is subject to the terms of the Mozilla Public
+   - License, v. 2.0. If a copy of the MPL was not distributed with this
+   - file, You can obtain one at http://mozilla.org/MPL/2.0/. -->
+
+<ContentPage
+    x:Class="Covid19Radar.Views.DebugPage"
+    xmlns="http://xamarin.com/schemas/2014/forms"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:ffimageloading="clr-namespace:FFImageLoading.Forms;assembly=FFImageLoading.Forms"
+    xmlns:ios="clr-namespace:Xamarin.Forms.PlatformConfiguration.iOSSpecific;assembly=Xamarin.Forms.Core"
+    xmlns:prism="http://prismlibrary.com"
+    xmlns:resources="clr-namespace:Covid19Radar.Resources;assembly=Covid19Radar"
+    Title="Debugページ"
+    ios:Page.UseSafeArea="true"
+    prism:ViewModelLocator.AutowireViewModel="True"
+    Style="{StaticResource DefaultPageStyle}"
+    Visual="Material">
+    <ScrollView>
+        <StackLayout
+            Padding="15"
+            BackgroundColor="#EEEEEE"
+            Spacing="15">
+            <Frame
+                Padding="10"
+                CornerRadius="10"
+                HasShadow="False">
+              <StackLayout Spacing="0">
+		<Label HorizontalTextAlignment="Center" Style="{StaticResource DefaultLabel}">
+                  <Label.FormattedText>
+                    <FormattedString>
+                      <Span Text="{Binding StartDate}" />
+                      <Span Text="{x:Static resources:AppResources.HomePageDescription0}" />
+                      <Span Text=" " />
+                      <Span Text="{Binding PastDate}" />
+                      <Span Text=" " />
+                      <Span Text="{x:Static resources:AppResources.HomePagePastDays}" />
+                      <Span Text=" " />
+                      <Span Text="{x:Static resources:AppResources.HomePageDescription1}" />
+                    </FormattedString>
+                  </Label.FormattedText>
+                </Label>
+		<Label HorizontalTextAlignment="Center" Style="{StaticResource DefaultLabel}">
+                  <Label.FormattedText>
+                    <FormattedString>
+                      <Span Text="陽性情報件数（直近14日）" />
+                      <Span Text=" " />
+                      <Span Text="{Binding Count}" />
+                    </FormattedString>
+                  </Label.FormattedText>
+                </Label>
+		<Label HorizontalTextAlignment="Center" Style="{StaticResource DefaultLabel}">
+                  <Label.FormattedText>
+                    <FormattedString>
+                      <Span Text="更新" />
+                      <Span Text=" " />
+                      <Span Text="{Binding LastProcessTekTimestamp}" />
+                    </FormattedString>
+                  </Label.FormattedText>
+                </Label>
+                <Button
+                    AutomationId="ButtonExposures"
+                    Command="{Binding Path=OnClickExposures}"
+                    Style="{StaticResource DefaultButton}"
+                    Text="{x:Static resources:AppResources.HomePageDescription2}" />
+		<Label HorizontalTextAlignment="Center" Style="{StaticResource DefaultLabel}">
+                  <Label.FormattedText>
+                    <FormattedString>
+		      <Span Text="ページ表示日時 "/>
+		      <Span Text="{Binding NowDate}" />
+                    </FormattedString>
+                  </Label.FormattedText>
+                </Label>
+		<Label HorizontalTextAlignment="Center" Style="{StaticResource DefaultLabel}">
+                  <Label.FormattedText>
+                    <FormattedString>
+		      <Span Text="アプリ使用開始日時= "/>
+		      <Span Text="{Binding StartDateTime}" />
+		      <Span Text=", ダウンロード件数= "/>
+		      <Span Text="{Binding DownloadCount}" />
+		      <Span Text=", AppSettings="/>
+		      <Span Text="{Binding StringAppSettings}" />
+                    </FormattedString>
+                  </Label.FormattedText>
+                </Label>
+		<Label HorizontalTextAlignment="Center" Style="{StaticResource DefaultLabel}">
+                  <Label.FormattedText>
+                    <FormattedString>
+		      <Span Text="その他 "/>
+		      <Span Text="AppSettings="/>
+		      <Span Text="{Binding StringAppSettings}" />
+                    </FormattedString>
+                  </Label.FormattedText>
+                </Label>
+                    <Button
+			Command="{prism:NavigateTo 'TutorialPage1'}"
+			Style="{StaticResource DefaultButton}"
+			Text="TutorialPage1" />
+                    <Button
+			Command="{prism:NavigateTo 'TutorialPage2'}"
+			Style="{StaticResource DefaultButton}"
+			Text="TutorialPage2" />
+                    <Button
+			Command="{prism:NavigateTo 'TutorialPage3'}"
+			Style="{StaticResource DefaultButton}"
+			Text="TutorialPage3" />
+                    <Button
+			Command="{prism:NavigateTo 'TutorialPage4'}"
+			Style="{StaticResource DefaultButton}"
+			Text="TutorialPage4" />
+                    <Button
+			Command="{prism:NavigateTo 'TutorialPage5'}"
+			Style="{StaticResource DefaultButton}"
+			Text="TutorialPage5" />
+                    <Button
+			Command="{prism:NavigateTo 'TutorialPage6'}"
+			Style="{StaticResource DefaultButton}"
+			Text="TutorialPage6" />
+                    <Button
+			Command="{prism:NavigateTo 'SplashPage'}"
+			Style="{StaticResource DefaultButton}"
+			Text="SplashPage" />
+                    <Button
+			Command="{prism:NavigateTo 'HomePage'}"
+			Style="{StaticResource DefaultButton}"
+			Text="HomePage" />
+                    <Button
+			Command="{prism:NavigateTo 'ContactedNotifyPage'}"
+			Style="{StaticResource DefaultButton}"
+			Text="{x:Static resources:AppResources.ContactedNotifyPageTitle}" />
+                    <Button
+			Command="{prism:NavigateTo 'NotContactPage'}"
+			Style="{StaticResource DefaultButton}"
+			Text="{x:Static resources:AppResources.NotContactPageTitle}" />
+                <Button
+                    Command="{prism:NavigateTo '/MenuPage/NavigationPage/HomePage'}"
+                    Style="{StaticResource DefaultButton}"
+                    Text="{x:Static resources:AppResources.TutorialPage6ButtonText1}" />
+                <Button
+                    Command="{prism:NavigateTo '/MenuPage/NavigationPage/HelpMenuPage'}"
+                    Style="{StaticResource DefaultButton}"
+                    Text="{x:Static resources:AppResources.TutorialPage6ButtonText2}" />
+                </StackLayout>
+            </Frame>
+            <Frame
+                Padding="10"
+                CornerRadius="10"
+                HasShadow="False">
+                <StackLayout Spacing="0">
+                    <Label Style="{StaticResource DefaultSubTitleLabel}" Text="{x:Static resources:AppResources.HomePageDescription3}" />
+                    <Grid ColumnSpacing="15" RowSpacing="0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="0.2*" />
+                            <ColumnDefinition Width="0.8*" />
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+                        <ffimageloading:CachedImage
+                            Grid.Row="0"
+                            Grid.Column="0"
+                            Aspect="AspectFit"
+                            Source="HOMEPage10.png" />
+                        <Label
+                            Grid.Row="0"
+                            Grid.Column="1"
+                            Style="{StaticResource DefaultLabelSmall}"
+                            Text="{x:Static resources:AppResources.HomePageHeader2Description}"
+                            VerticalTextAlignment="Center" />
+                    </Grid>
+
+                    <Button
+                        Command="{prism:NavigateTo 'SubmitConsentPage'}"
+                        Style="{StaticResource DefaultButton}"
+                        Text="{x:Static resources:AppResources.HomePageDescription4}" />
+                </StackLayout>
+            </Frame>
+            <Frame
+                Padding="10"
+                CornerRadius="10"
+                HasShadow="False">
+                <StackLayout Spacing="0">
+                    <Label Style="{StaticResource DefaultSubTitleLabel}" Text="{x:Static resources:AppResources.HomePageHeader3Title}" />
+                    <Grid ColumnSpacing="15" RowSpacing="0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="0.2*" />
+                            <ColumnDefinition Width="0.8*" />
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+                        <ffimageloading:CachedImage
+                            Grid.Row="0"
+                            Grid.Column="0"
+                            Aspect="AspectFit"
+                            Source="HOMEPage11.png" />
+                        <Label
+                            Grid.Row="0"
+                            Grid.Column="1"
+                            Style="{StaticResource DefaultLabelSmall}"
+                            Text="{x:Static resources:AppResources.HomePageHeader3Description}"
+                            VerticalTextAlignment="Center" />
+                    </Grid>
+                    <Button
+                        Command="{Binding Path=OnClickShareApp}"
+                        Style="{StaticResource DefaultButton}"
+                        Text="{x:Static resources:AppResources.HomePageDescription5}" />
+                </StackLayout>
+            </Frame>
+        </StackLayout>
+    </ScrollView>
+</ContentPage>

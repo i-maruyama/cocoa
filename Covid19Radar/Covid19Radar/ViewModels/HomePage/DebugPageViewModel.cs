@@ -1,0 +1,151 @@
+﻿/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
+
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using Acr.UserDialogs;
+using Covid19Radar.Common;
+using Covid19Radar.Model;
+using Covid19Radar.Resources;
+using Covid19Radar.Services;
+using Covid19Radar.Services.Logs;
+using Covid19Radar.Views;
+using Prism.Navigation;
+using Xamarin.Forms;
+
+namespace Covid19Radar.ViewModels
+{
+    public class DebugPageViewModel : ViewModelBase
+    {
+        private readonly ILoggerService loggerService;
+        private readonly IUserDataService userDataService;// StartDate
+	// snap:///~/git/cocoa/Covid19Radar/Covid19Radar/Services/UserDataService.cs
+        private readonly ITermsUpdateService termsUpdateService;
+        private readonly IExposureNotificationService exposureNotificationService;
+        private readonly IHttpDataService httpDataService;
+
+        private string _count;
+        private string _downloadcount;
+        private string _lastProcessTekTimestamp;
+	
+        public string StartDate
+        {
+            get { return userDataService.GetStartDate().ToLocalTime().ToString("D"); }
+            set {  }
+        }
+        public string StartDateTime
+        {
+            get { return userDataService.GetStartDate().ToLocalTime().ToString("F"); }
+            set {  }
+        }
+        public string PastDate
+        {
+            get { return userDataService.GetDaysOfUse().ToString(); }
+            set {  }
+        }
+        public string NowDate
+        {
+            get { return DateTime.Now.ToLocalTime().ToString("F");
+	    }
+            set {  }
+        }
+        public string Count
+        {
+            get { return _count; }
+            set { SetProperty(ref _count, value); }
+        }
+        public string DownloadCount
+        {
+            get { return _downloadcount; }
+            set { SetProperty(ref _downloadcount, value); }
+        }
+        public string LastProcessTekTimestamp
+        {
+            get { return _lastProcessTekTimestamp; }
+            set { SetProperty(ref _lastProcessTekTimestamp, value); }
+        }
+        public string StringAppSettings
+	{
+	    // [[snap:///~/mnt/owner/source/repos/cocoa/Covid19Radar/Covid19Radar/settings.json]]
+	    get {
+		var str = new string[] {"("
+					,"ver=",AppSettings.Instance.AppVersion
+					,",region=",AppSettings.Instance.SupportedRegions[0]
+					,",cdnurl=",AppSettings.Instance.CdnUrlBase
+					,")"};
+		return string.Join(" ",str);
+	    }
+	    set{}
+	}
+        public DebugPageViewModel(IHttpDataService httpDataService,INavigationService navigationService, ILoggerService loggerService, IUserDataService userDataService, ITermsUpdateService termsUpdateService,IExposureNotificationService exposureNotificationService) : base(navigationService)
+        {
+            Title = "Title:DebugPage";
+            this.loggerService = loggerService;
+            this.userDataService = userDataService;
+            this.exposureNotificationService = exposureNotificationService;
+        }
+        public override async void Initialize(INavigationParameters parameters)
+        {
+            loggerService.StartMethod();
+            try
+            {
+                await exposureNotificationService.StartExposureNotification();
+                await exposureNotificationService.FetchExposureKeyAsync();
+                var statusMessage = await exposureNotificationService.UpdateStatusMessageAsync();
+                loggerService.Info($"Exposure notification status: {statusMessage}");
+                base.Initialize(parameters);
+                loggerService.EndMethod();
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine(ex.ToString());
+                loggerService.Exception("Failed to exposure notification status.", ex);
+		// in debug mode, we get 39507 error from exposure notification api
+                loggerService.EndMethod();
+            }
+	    
+	    long ticks =  exposureNotificationService.GetLastProcessTekTimestamp(AppSettings.Instance.SupportedRegions[0]);
+	    DateTimeOffset dt = DateTimeOffset.FromUnixTimeMilliseconds(ticks).ToOffset(new TimeSpan(9, 0, 0));
+	    //snap:///~/git/cocoa/Covid19Radar/Covid19Radar.Android/Services/Logs/LogPeriodicDeleteServiceAndroid.cs
+	    LastProcessTekTimestamp = dt.ToLocalTime().ToString("F");
+
+            //List<TemporaryExposureKeyExportFileModel> tekList = await httpDataService.GetTemporaryExposureKeyList(
+	    //	AppSettings.Instance.SupportedRegions[0],
+	    //	default);
+	    //Count = tekList.Count.ToString();
+	    Count = exposureNotificationService.GetLastProcessTekListCount(AppSettings.Instance.SupportedRegions[0]).ToString();
+	    DownloadCount = exposureNotificationService.GetLastDownloadCount(AppSettings.Instance.SupportedRegions[0]).ToString();
+
+        }
+	public Command OnClickExposures => new Command(async () =>
+        {
+            loggerService.StartMethod();
+
+            var count = exposureNotificationService.GetExposureCount();
+            loggerService.Info($"Exposure count: {count}");
+            if (count > 0)
+            {
+                await NavigationService.NavigateAsync(nameof(ContactedNotifyPage));
+                loggerService.EndMethod();
+                return;
+            }
+            else
+            {
+                await NavigationService.NavigateAsync(nameof(NotContactPage));
+                loggerService.EndMethod();
+                return;
+            }
+        });
+
+        public Command OnClickShareApp => new Command(() =>
+       {
+           loggerService.StartMethod();
+
+           AppUtils.PopUpShare();
+
+           loggerService.EndMethod();
+       });
+    }
+}
