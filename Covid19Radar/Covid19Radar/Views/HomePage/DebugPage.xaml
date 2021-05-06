@@ -43,18 +43,15 @@
 		<Label HorizontalTextAlignment="Center" Style="{StaticResource DefaultLabel}">
                   <Label.FormattedText>
                     <FormattedString>
-                      <Span Text="陽性情報件数（直近14日）" />
-                      <Span Text=" " />
-                      <Span Text="{Binding Count}" />
-                    </FormattedString>
-                  </Label.FormattedText>
-                </Label>
-		<Label HorizontalTextAlignment="Center" Style="{StaticResource DefaultLabel}">
-                  <Label.FormattedText>
-                    <FormattedString>
-                      <Span Text="更新" />
+		      <Span Text="更新日時" />
                       <Span Text=" " />
                       <Span Text="{Binding LastProcessTekTimestamp}" />
+                      <Span Text=" " />
+		      <Span Text="の陽性情報" />
+                      <Span Text=" " />
+		      <Span Text="{Binding Count}" />
+                      <Span Text=" " />
+		      <Span Text="件（直近14日）" />
                     </FormattedString>
                   </Label.FormattedText>
                 </Label>
@@ -63,6 +60,20 @@
                     Command="{Binding Path=OnClickExposures}"
                     Style="{StaticResource DefaultButton}"
                     Text="{x:Static resources:AppResources.HomePageDescription2}" />
+              </StackLayout>
+            </Frame>
+            <Frame
+                Padding="10"
+                CornerRadius="10"
+                HasShadow="False">
+              <StackLayout Spacing="0">
+		<Label HorizontalTextAlignment="Center" Style="{StaticResource DefaultLabel}">
+                  <Label.FormattedText>
+                    <FormattedString>
+		      <Span Text="このデバッグ情報は https://github.com/cocoa-mhlw/cocoa/issues/128 の議論に対応します。"/>
+                    </FormattedString>
+                  </Label.FormattedText>
+                </Label>
 		<Label HorizontalTextAlignment="Center" Style="{StaticResource DefaultLabel}">
                   <Label.FormattedText>
                     <FormattedString>
@@ -74,12 +85,16 @@
 		<Label HorizontalTextAlignment="Center" Style="{StaticResource DefaultLabel}">
                   <Label.FormattedText>
                     <FormattedString>
-		      <Span Text="アプリ使用開始日時= "/>
+		      <Span Text="アプリ使用開始日時 "/>
 		      <Span Text="{Binding StartDateTime}" />
-		      <Span Text=", ダウンロード件数= "/>
+                    </FormattedString>
+                  </Label.FormattedText>
+                </Label>
+		<Label HorizontalTextAlignment="Center" Style="{StaticResource DefaultLabel}">
+                  <Label.FormattedText>
+                    <FormattedString>
+		      <Span Text="ダウンロード件数 "/>
 		      <Span Text="{Binding DownloadCount}" />
-		      <Span Text=", AppSettings="/>
-		      <Span Text="{Binding StringAppSettings}" />
                     </FormattedString>
                   </Label.FormattedText>
                 </Label>
@@ -92,6 +107,14 @@
                     </FormattedString>
                   </Label.FormattedText>
                 </Label>
+                <Button
+                    Command="{prism:NavigateTo '/MenuPage/NavigationPage/HomePage'}"
+                    Style="{StaticResource DefaultButton}"
+                    Text="{x:Static resources:AppResources.TutorialPage6ButtonText1}" />
+                <Button
+                    Command="{prism:NavigateTo '/MenuPage/NavigationPage/HelpMenuPage'}"
+                    Style="{StaticResource DefaultButton}"
+                    Text="{x:Static resources:AppResources.TutorialPage6ButtonText2}" />
                     <Button
 			Command="{prism:NavigateTo 'TutorialPage1'}"
 			Style="{StaticResource DefaultButton}"
@@ -127,19 +150,11 @@
                     <Button
 			Command="{prism:NavigateTo 'ContactedNotifyPage'}"
 			Style="{StaticResource DefaultButton}"
-			Text="{x:Static resources:AppResources.ContactedNotifyPageTitle}" />
+			Text="ContactedNotifyPage" />
                     <Button
 			Command="{prism:NavigateTo 'NotContactPage'}"
 			Style="{StaticResource DefaultButton}"
-			Text="{x:Static resources:AppResources.NotContactPageTitle}" />
-                <Button
-                    Command="{prism:NavigateTo '/MenuPage/NavigationPage/HomePage'}"
-                    Style="{StaticResource DefaultButton}"
-                    Text="{x:Static resources:AppResources.TutorialPage6ButtonText1}" />
-                <Button
-                    Command="{prism:NavigateTo '/MenuPage/NavigationPage/HelpMenuPage'}"
-                    Style="{StaticResource DefaultButton}"
-                    Text="{x:Static resources:AppResources.TutorialPage6ButtonText2}" />
+			Text="NotContactPage" />
                 </StackLayout>
             </Frame>
             <Frame
