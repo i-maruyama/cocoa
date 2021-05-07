@@ -1,6 +1,7 @@
 ﻿/* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
+#define ReleasePersonal
 
 using Covid19Radar.Common;
 using Covid19Radar.Model;
@@ -72,7 +73,11 @@ namespace Covid19Radar.Services
             }
 
             loggerService.EndMethod();
-            return true;// debug
+#if ReleasePersonal
+            return true;// for ReleasePersonal
+#else
+            return false;
+#endif
         }
 
         public async Task<HttpStatusCode> PutSelfExposureKeysAsync(DiagnosisSubmissionParameter request)

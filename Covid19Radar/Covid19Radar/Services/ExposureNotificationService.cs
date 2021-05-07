@@ -27,9 +27,11 @@ namespace Covid19Radar.Services
         long GetLastProcessTekTimestamp(string region);
         long GetLastProcessTekListCount(string region);
         long GetLastDownloadCount(string region);
+        DateTime GetLastDownloadDateTime(string region);
         void SetLastProcessTekTimestamp(string region, long created);
         void SetLastProcessTekListCount(string region, long created);
         void SetLastDownloadCount(string region, long created);
+        void SetLastDownloadDateTime(string region,DateTime created);
         void RemoveLastProcessTekTimestamp();
 
         Task FetchExposureKeyAsync();
@@ -163,14 +165,14 @@ namespace Covid19Radar.Services
             loggerService.EndMethod();
         }
 
-        public long GetLastProcessTekTimestamp(string region)
+        public T GetKey<T>(string region,string key,T def)
         {
             loggerService.StartMethod();
-            var result = 0L;
-            var jsonString = preferencesService.GetValue<string>(PreferenceKey.LastProcessTekTimestamp, null);
+            var result = def;
+            var jsonString = preferencesService.GetValue<string>(key, null);
             if (!string.IsNullOrEmpty(jsonString))
             {
-                var dict = JsonConvert.DeserializeObject<Dictionary<string, long>>(jsonString);
+                var dict = JsonConvert.DeserializeObject<Dictionary<string, T>>(jsonString);
                 if (dict.ContainsKey(region))
                 {
                     result = dict[region];
@@ -179,89 +181,56 @@ namespace Covid19Radar.Services
             loggerService.EndMethod();
             return result;
         }
+        public DateTime GetLastDownloadDateTime(string region)
+        {
+	    return GetKey<DateTime>(region,PreferenceKey.LastDownloadDateTime,new DateTime());
+	}
+
+        public long GetLastProcessTekTimestamp(string region)
+        {
+	    return GetKey<long>(region,PreferenceKey.LastProcessTekTimestamp,0L);
+	}
         public long GetLastProcessTekListCount(string region)
         {
-            loggerService.StartMethod();
-            var result = 0L;
-            var jsonString = preferencesService.GetValue<string>(PreferenceKey.LastProcessTekListCount, null);
-            if (!string.IsNullOrEmpty(jsonString))
-            {
-                var dict = JsonConvert.DeserializeObject<Dictionary<string, long>>(jsonString);
-                if (dict.ContainsKey(region))
-                {
-                    result = dict[region];
-                }
-            }
-            loggerService.EndMethod();
-            return result;
+	    return GetKey<long>(region,PreferenceKey.LastProcessTekListCount,0L);
         }
         public long GetLastDownloadCount(string region)
         {
-            loggerService.StartMethod();
-            var result = 0L;
-            var jsonString = preferencesService.GetValue<string>(PreferenceKey.LastDownloadCount, null);
-            if (!string.IsNullOrEmpty(jsonString))
-            {
-                var dict = JsonConvert.DeserializeObject<Dictionary<string, long>>(jsonString);
-                if (dict.ContainsKey(region))
-                {
-                    result = dict[region];
-                }
-            }
-            loggerService.EndMethod();
-            return result;
+	    return GetKey<long>(region,PreferenceKey.LastDownloadCount,0L);
         }
 
-        public void SetLastProcessTekTimestamp(string region, long created)
+        public void SetKey<T>(string region, string key,T created)
         {
             loggerService.StartMethod();
-            var jsonString = preferencesService.GetValue<string>(PreferenceKey.LastProcessTekTimestamp, null);
-            Dictionary<string, long> newDict;
+            var jsonString = preferencesService.GetValue<string>(key, null);
+            Dictionary<string, T> newDict;
             if (!string.IsNullOrEmpty(jsonString))
             {
-                newDict = JsonConvert.DeserializeObject<Dictionary<string, long>>(jsonString);
+                newDict = JsonConvert.DeserializeObject<Dictionary<string, T>>(jsonString);
             }
             else
             {
-                newDict = new Dictionary<string, long>();
+                newDict = new Dictionary<string, T>();
             }
             newDict[region] = created;
-            preferencesService.SetValue(PreferenceKey.LastProcessTekTimestamp, JsonConvert.SerializeObject(newDict));
+            preferencesService.SetValue(key, JsonConvert.SerializeObject(newDict));
             loggerService.EndMethod();
         }
+        public void SetLastProcessTekTimestamp(string region, long created)
+        {
+	    SetKey<long>(region,PreferenceKey.LastProcessTekTimestamp,created);
+	}
+        public void SetLastDownloadDateTime(string region, DateTime created)
+        {
+	    SetKey<DateTime>(region,PreferenceKey.LastDownloadDateTime,created);
+	}
         public void SetLastProcessTekListCount(string region, long created)
         {
-            loggerService.StartMethod();
-            var jsonString = preferencesService.GetValue<string>(PreferenceKey.LastProcessTekListCount, null);
-            Dictionary<string, long> newDict;
-            if (!string.IsNullOrEmpty(jsonString))
-            {
-                newDict = JsonConvert.DeserializeObject<Dictionary<string, long>>(jsonString);
-            }
-            else
-            {
-                newDict = new Dictionary<string, long>();
-            }
-            newDict[region] = created;
-            preferencesService.SetValue(PreferenceKey.LastProcessTekListCount, JsonConvert.SerializeObject(newDict));
-            loggerService.EndMethod();
+	    SetKey<long>(region,PreferenceKey.LastProcessTekListCount,created);
         }
         public void SetLastDownloadCount(string region, long created)
         {
-            loggerService.StartMethod();
-            var jsonString = preferencesService.GetValue<string>(PreferenceKey.LastDownloadCount, null);
-            Dictionary<string, long> newDict;
-            if (!string.IsNullOrEmpty(jsonString))
-            {
-                newDict = JsonConvert.DeserializeObject<Dictionary<string, long>>(jsonString);
-            }
-            else
-            {
-                newDict = new Dictionary<string, long>();
-            }
-            newDict[region] = created;
-            preferencesService.SetValue(PreferenceKey.LastDownloadCount, JsonConvert.SerializeObject(newDict));
-            loggerService.EndMethod();
+	    SetKey<long>(region,PreferenceKey.LastDownloadCount,created);
         }
 
         public void RemoveLastProcessTekTimestamp()
@@ -270,6 +239,7 @@ namespace Covid19Radar.Services
             preferencesService.RemoveValue(PreferenceKey.LastProcessTekTimestamp);
             preferencesService.RemoveValue(PreferenceKey.LastProcessTekListCount);
             preferencesService.RemoveValue(PreferenceKey.LastDownloadCount);
+            preferencesService.RemoveValue(PreferenceKey.LastDownloadDateTime);
             loggerService.EndMethod();
         }
 

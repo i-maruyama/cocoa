@@ -37,21 +37,17 @@
                       <Span Text="{x:Static resources:AppResources.HomePagePastDays}" />
                       <Span Text=" " />
                       <Span Text="{x:Static resources:AppResources.HomePageDescription1}" />
-                    </FormattedString>
-                  </Label.FormattedText>
-                </Label>
-		<Label HorizontalTextAlignment="Center" Style="{StaticResource DefaultLabel}">
-                  <Label.FormattedText>
-                    <FormattedString>
-		      <Span Text="更新日時" />
-                      <Span Text=" " />
-                      <Span Text="{Binding LastProcessTekTimestamp}" />
-                      <Span Text=" " />
-		      <Span Text="の陽性情報" />
+		      <Span Text="&#xa;陽性情報" />
                       <Span Text=" " />
 		      <Span Text="{Binding Count}" />
                       <Span Text=" " />
-		      <Span Text="件（直近14日）" />
+		      <Span Text="件（直近14日)"/>
+                      <Span Text="&#xa;最新情報" />
+                      <Span Text=" " />
+                      <Span Text="{Binding LastProcessTekTimestamp}" />
+                      <Span Text="&#xa;確認日時" />
+                      <Span Text=" " />
+                      <Span Text="{Binding DownloadDateTime}" />
                     </FormattedString>
                   </Label.FormattedText>
                 </Label>
@@ -74,6 +70,10 @@
                     </FormattedString>
                   </Label.FormattedText>
                 </Label>
+                <Button
+                    Command="{Binding Path=OnClickRemove}"
+                    Style="{StaticResource DefaultButton}"
+                    Text="陽性情報を再取得（LastProcessTekTimestamp をリセット）" />
 		<Label HorizontalTextAlignment="Center" Style="{StaticResource DefaultLabel}">
                   <Label.FormattedText>
                     <FormattedString>
@@ -93,8 +93,32 @@
 		<Label HorizontalTextAlignment="Center" Style="{StaticResource DefaultLabel}">
                   <Label.FormattedText>
                     <FormattedString>
-		      <Span Text="ダウンロード件数 "/>
+		      <Span Text="陽性情報の最新日時:LastProcessTekTimestamp "/>
+		      <Span Text="{Binding LastProcessTekTimestamp}" />
+                    </FormattedString>
+                  </Label.FormattedText>
+                </Label>
+		<Label HorizontalTextAlignment="Center" Style="{StaticResource DefaultLabel}">
+                  <Label.FormattedText>
+                    <FormattedString>
+		      <Span Text="陽性情報の件数:tekList.Count "/>
+		      <Span Text="{Binding Count}" />
+                    </FormattedString>
+                  </Label.FormattedText>
+                </Label>
+		<Label HorizontalTextAlignment="Center" Style="{StaticResource DefaultLabel}">
+                  <Label.FormattedText>
+                    <FormattedString>
+		      <Span Text="接触確認の最新件数:downloadedFiles.Count "/>
 		      <Span Text="{Binding DownloadCount}" />
+                    </FormattedString>
+                  </Label.FormattedText>
+                </Label>
+		<Label HorizontalTextAlignment="Center" Style="{StaticResource DefaultLabel}">
+                  <Label.FormattedText>
+                    <FormattedString>
+		      <Span Text="接触確認(C19R Submit Batches)の最新日時 "/>
+		      <Span Text="{Binding DownloadDateTime}" />
                     </FormattedString>
                   </Label.FormattedText>
                 </Label>

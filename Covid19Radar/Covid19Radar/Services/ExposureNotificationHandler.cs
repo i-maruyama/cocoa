@@ -1,6 +1,7 @@
 ﻿/* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
+#define ReleasePersonal
 
 using System;
 using System.Collections.Generic;
@@ -166,13 +167,18 @@ namespace Covid19Radar.Services
                         continue;
                     }
 
+#if ReleasePersonal
+                    loggerService.Info("C19R Submit Batches:skip");
+#else
+                    loggerService.Info("C19R Submit Batches");
+                    await submitBatches(downloadedFiles);
+#endif
                     exposureNotificationService.SetLastProcessTekTimestamp(serverRegion, newCreated);
                     exposureNotificationService.SetLastProcessTekListCount(serverRegion, _tekListCount);
                     exposureNotificationService.SetLastDownloadCount(serverRegion, downloadedFiles.Count);
+                    exposureNotificationService.SetLastDownloadDateTime(serverRegion, DateTime.Now);
                     loggerService.Info($"region: {serverRegion}, lastCreated: {newCreated} from Downloaded files: {downloadedFiles.Count}, tekListCount: {_tekListCount}");
 
-                    loggerService.Info("C19R Submit Batches");
-                    await submitBatches(downloadedFiles);
 
 
                     // delete all temporary files
