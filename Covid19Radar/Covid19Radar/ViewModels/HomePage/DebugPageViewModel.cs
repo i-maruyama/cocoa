@@ -75,12 +75,39 @@ namespace Covid19Radar.ViewModels
 	{
 	    // [[snap:///~/mnt/owner/source/repos/cocoa/Covid19Radar/Covid19Radar/settings.json]]
 	    get {
-		var str = new string[] {"("
-					,"ver=",AppSettings.Instance.AppVersion
-					,",region=",AppSettings.Instance.SupportedRegions[0]
-					,",cdnurl=",AppSettings.Instance.CdnUrlBase
-					,")"};
-		return string.Join(" ",str);
+		string os = null;
+		switch (Device.RuntimePlatform)
+		{
+		    case Device.Android:
+			os = "Android";
+			break;
+		    case Device.iOS:
+			os = "iOS";
+			break;
+		}
+		long ticks =  exposureNotificationService.GetLastProcessTekTimestamp(AppSettings.Instance.SupportedRegions[0]);
+		DateTimeOffset dt = DateTimeOffset.FromUnixTimeMilliseconds(ticks).ToOffset(new TimeSpan(9, 0, 0));
+		//please check : offset is correct or not
+		//cf: ../../../Covid19Radar.Android/Services/Logs/LogPeriodicDeleteServiceAndroid.cs
+		string LastProcessTekTimestamp = dt.ToLocalTime().ToString("F");
+
+		var str = new string[]
+		{"build: "+os
+#if DEBUG
+		 +",DEBUG"
+#endif
+#if USE_MOCK
+		 +",USE_MOCK"
+#endif
+		 ,"ver: "+AppSettings.Instance.AppVersion
+		 ,"region: "+AppSettings.Instance.SupportedRegions[0]
+		 ,"cdnurl: "+AppSettings.Instance.CdnUrlBase
+		 ,"GetStart: "+userDataService.GetStartDate().ToLocalTime().ToString("F")
+		 ,"Now: "+DateTime.Now.ToLocalTime().ToString("F")
+		 ,"LastProcessTek: "+LastProcessTekTimestamp
+		 ,"ExposureCount: "+exposureNotificationService.GetExposureCount().ToString()
+		};
+		return string.Join(Environment.NewLine,str);
 	    }
 	    set{}
 	}

@@ -29,6 +29,7 @@ namespace Covid19Radar.ViewModels
         public MenuPageViewModel(INavigationService navigationService) : base(navigationService)
         {
             MenuItems = new ObservableCollection<MainMenuModel>();
+#if DEBUG
             MenuItems.Add(new MainMenuModel()
             {
                 Icon = "\uf013",
@@ -37,6 +38,7 @@ namespace Covid19Radar.ViewModels
                 IconColor = "#019AE8",
                 TextColor = "#000"
             });
+#endif
             MenuItems.Add(new MainMenuModel()
             {
                 Icon = "\uf965",
