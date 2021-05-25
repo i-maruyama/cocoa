@@ -24,6 +24,8 @@ namespace Covid19Radar.Services
     [Xamarin.Forms.Internals.Preserve] // Ensure this isn't linked out
     public class ExposureNotificationHandler : IExposureNotificationHandler
     {
+        private long _tekListCount;
+
         private ILoggerService LoggerService => ServiceLocator.Current.GetInstance<ILoggerService>();
         private IHttpDataService HttpDataService => ServiceLocator.Current.GetInstance<IHttpDataService>();
         private IExposureNotificationService ExposureNotificationService => ServiceLocator.Current.GetInstance<IExposureNotificationService>();
@@ -170,6 +172,13 @@ namespace Covid19Radar.Services
                     await submitBatches(downloadedFiles);
 
                     exposureNotificationService.SetLastProcessTekTimestamp(serverRegion, newCreated);
+                    if (Xamarin.Essentials.Preferences.Get("back_ground",false)) {
+                        exposureNotificationService.SetLastProcessTekTimestampBg(serverRegion, newCreated);
+                    }
+                    exposureNotificationService.SetLastProcessTekListCount(serverRegion, _tekListCount);
+                    exposureNotificationService.SetLastDownloadCount(serverRegion, downloadedFiles.Count);
+                    exposureNotificationService.SetLastDownloadDateTime(serverRegion, DateTime.Now);
+
                     loggerService.Info($"region: {serverRegion}, lastCreated: {newCreated}");
 
                     // delete all temporary files
@@ -225,6 +234,7 @@ namespace Covid19Radar.Services
             var httpDataService = HttpDataService;
 
             List<TemporaryExposureKeyExportFileModel> tekList = await httpDataService.GetTemporaryExposureKeyList(region, cancellationToken);
+            _tekListCount = tekList.Count;
             if (tekList.Count == 0)
             {
                 loggerService.EndMethod();

@@ -9,12 +9,16 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Xamarin.Essentials;
 using Xamarin.ExposureNotifications;
+using Covid19Radar.Services.Logs;
+using CommonServiceLocator;
 
 namespace Covid19Radar.Services
 {
 	public class TestNativeImplementation : INativeImplementation
 	{
-		static readonly Random random = new Random();
+        private ILoggerService LoggerService => ServiceLocator.Current.GetInstance<ILoggerService>();
+
+        static readonly Random random = new Random();
 
 		Task WaitRandom()
 			=> Task.Delay(random.Next(100, 2500));
@@ -34,6 +38,7 @@ namespace Covid19Radar.Services
 		public async Task<bool> IsEnabledAsync()
 		{
 			await WaitRandom();
+            LoggerService.Info("Debug IsEnabledAsync called!!");
 			return Preferences.Get("fake_enabled", true);
 		}
 

@@ -1,12 +1,12 @@
 {
-  "appVersion": "APP_VERSION",
+  "appVersion": "5.25",
   "apiSecret": "API_SECRET",
   "apiKey": "API_KEY",
-  "apiUrlBase": "https://API_URL_BASE/api",
+  "apiUrlBase": "https://API_URL_BASE/api1", // 高リスク接触
   "supportedRegions": "440",
   "blobStorageContainerName": "c19r",
   "androidSafetyNetApiKey": "ANDROID_SAFETYNETKEY",
-  "cdnUrlBase": "https://CDN_URL_BASE/",
+  "cdnUrlBase": "https://CDN_URL_BASE/1",  // リアルタイムにTEK発生
   "licenseUrl": "https://covid19radarjpnprod.z11.web.core.windows.net/license.html",
   "appStoreUrl": "https://itunes.apple.com/jp/app/id1516764458?mt=8",
   "googlePlayUrl": "https://play.google.com/store/apps/details?id=jp.go.mhlw.covid19radar",

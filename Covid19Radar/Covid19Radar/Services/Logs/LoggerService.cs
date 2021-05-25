@@ -201,7 +201,7 @@ namespace Covid19Radar.Services.Logs
             var columns = new List<string>
             {
                 jstDateTime.ToString("yyyy/MM/dd HH:mm:ss"),
-                logLevel.ToString(),
+                logLevel.ToString() + (Xamarin.Essentials.Preferences.Get("fore_ground", false) ? "fg" : "") + (Xamarin.Essentials.Preferences.Get("back_ground", false) ? "bg" : ""),
                 message,
                 method,
                 filePath,

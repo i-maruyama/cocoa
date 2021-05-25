@@ -34,6 +34,7 @@ namespace Xamarin.ExposureNotifications
                 typeof(BackgroundFetchWorker),
                 bgRepeatInterval);
             bgRequestBuilder.Invoke(workRequestBuilder);
+            Xamarin.Essentials.Preferences.Set("bgInterval", bgRepeatInterval.ToString());
             return workRequestBuilder.Build();
         }
 

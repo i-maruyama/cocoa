@@ -25,7 +25,15 @@ namespace Covid19Radar.Services
         void RemoveConfiguration();
 
         long GetLastProcessTekTimestamp(string region);
+        string GetLastProcessTekTimestampBg(string region);
+        long GetLastProcessTekListCount(string region);
+        long GetLastDownloadCount(string region);
+        DateTime GetLastDownloadDateTime(string region);
         void SetLastProcessTekTimestamp(string region, long created);
+        void SetLastProcessTekTimestampBg(string region, long created);
+        void SetLastProcessTekListCount(string region, long created);
+        void SetLastDownloadCount(string region, long created);
+        void SetLastDownloadDateTime(string region, DateTime created);
         void RemoveLastProcessTekTimestamp();
 
         Task FetchExposureKeyAsync();
@@ -159,14 +167,14 @@ namespace Covid19Radar.Services
             loggerService.EndMethod();
         }
 
-        public long GetLastProcessTekTimestamp(string region)
+        public T GetKey<T>(string region, string key, T def)
         {
             loggerService.StartMethod();
-            var result = 0L;
-            var jsonString = preferencesService.GetValue<string>(PreferenceKey.LastProcessTekTimestamp, null);
+            var result = def;
+            var jsonString = preferencesService.GetValue<string>(key, null);
             if (!string.IsNullOrEmpty(jsonString))
             {
-                var dict = JsonConvert.DeserializeObject<Dictionary<string, long>>(jsonString);
+                var dict = JsonConvert.DeserializeObject<Dictionary<string, T>>(jsonString);
                 if (dict.ContainsKey(region))
                 {
                     result = dict[region];
@@ -175,31 +183,95 @@ namespace Covid19Radar.Services
             loggerService.EndMethod();
             return result;
         }
+        public DateTime GetLastDownloadDateTime(string region)
+        {
+            return GetKey<DateTime>(region, PreferenceKey.LastDownloadDateTime, new DateTime());
+        }
 
-        public void SetLastProcessTekTimestamp(string region, long created)
+        public long GetLastProcessTekTimestamp(string region)
+        {
+            return GetKey<long>(region, PreferenceKey.LastProcessTekTimestamp, 0L);
+        }
+        public string GetLastProcessTekTimestampBg(string region)
+        {
+            return GetKey<string>(region, PreferenceKey.LastProcessTekTimestampBg, "");
+        }
+
+        public long GetLastProcessTekListCount(string region)
+        {
+            return GetKey<long>(region, PreferenceKey.LastProcessTekListCount, 0L);
+        }
+        public long GetLastDownloadCount(string region)
+        {
+            return GetKey<long>(region, PreferenceKey.LastDownloadCount, 0L);
+        }
+
+        public void SetKey<T>(string region, string key, T created)
         {
             loggerService.StartMethod();
-            var jsonString = preferencesService.GetValue<string>(PreferenceKey.LastProcessTekTimestamp, null);
-            Dictionary<string, long> newDict;
+            var jsonString = preferencesService.GetValue<string>(key, null);
+            Dictionary<string, T> newDict;
             if (!string.IsNullOrEmpty(jsonString))
             {
-                newDict = JsonConvert.DeserializeObject<Dictionary<string, long>>(jsonString);
+                newDict = JsonConvert.DeserializeObject<Dictionary<string, T>>(jsonString);
             }
             else
             {
-                newDict = new Dictionary<string, long>();
+                newDict = new Dictionary<string, T>();
             }
             newDict[region] = created;
-            preferencesService.SetValue(PreferenceKey.LastProcessTekTimestamp, JsonConvert.SerializeObject(newDict));
+            preferencesService.SetValue(key, JsonConvert.SerializeObject(newDict));
             loggerService.EndMethod();
+        }
+        public void SetLastProcessTekTimestamp(string region, long created)
+        {
+            SetKey<long>(region, PreferenceKey.LastProcessTekTimestamp, created);
+        }
+
+        public void SetLastProcessTekTimestampBg(string region, long created)
+        {
+            string s = GetLastProcessTekTimestampBg(region).TrimEnd(',');
+            var list = s.Split(",").ToList();
+            int max = 15;
+            if (list.Count > max)// list[0] ~ list[count-1]
+            {
+                list.RemoveRange(max, list.Count - 1 - max);
+            }
+            if (list.Count > 0)
+            {
+                s = created.ToString() + "," + string.Join(",", list);
+
+            }
+            else
+            {
+                s = created.ToString();
+            }
+            SetKey<string>(region, PreferenceKey.LastProcessTekTimestampBg, s);
+        }
+        public void SetLastDownloadDateTime(string region, DateTime created)
+        {
+            SetKey<DateTime>(region, PreferenceKey.LastDownloadDateTime, created);
+        }
+        public void SetLastProcessTekListCount(string region, long created)
+        {
+            SetKey<long>(region, PreferenceKey.LastProcessTekListCount, created);
+        }
+        public void SetLastDownloadCount(string region, long created)
+        {
+            SetKey<long>(region, PreferenceKey.LastDownloadCount, created);
         }
 
         public void RemoveLastProcessTekTimestamp()
         {
             loggerService.StartMethod();
             preferencesService.RemoveValue(PreferenceKey.LastProcessTekTimestamp);
+            preferencesService.RemoveValue(PreferenceKey.LastProcessTekTimestampBg);
+            preferencesService.RemoveValue(PreferenceKey.LastProcessTekListCount);
+            preferencesService.RemoveValue(PreferenceKey.LastDownloadCount);
+            preferencesService.RemoveValue(PreferenceKey.LastDownloadDateTime);
             loggerService.EndMethod();
         }
+
 
         public List<UserExposureInfo> GetExposureInformationList()
         {

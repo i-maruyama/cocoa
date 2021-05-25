@@ -26,9 +26,14 @@ namespace Covid19Radar.Droid
             base.SetTheme(Resource.Style.MainTheme);
             base.OnCreate(savedInstanceState);
 
+            Xamarin.Forms.Forms.SetFlags("RadioButton_Experimental");// debugging Xamarin をさきに配置すると、 bgInterval を取得できる。
+            Xamarin.Essentials.Platform.Init(this, savedInstanceState);
+            Xamarin.Forms.Forms.Init(this, savedInstanceState);
+            Xamarin.Forms.FormsMaterial.Init(this, savedInstanceState);
+
             // Override WorkRequest configuration
             // Must be run before being scheduled with `ExposureNotification.Init()` in `App.OnInitialized()`
-            var repeatInterval = TimeSpan.FromHours(6);
+            var repeatInterval = TimeSpan.FromHours(0.25); // for background_debug
             Action<PeriodicWorkRequest.Builder> requestBuilder = b =>
                b.SetConstraints(new Constraints.Builder()
                    .SetRequiresBatteryNotLow(true)
@@ -36,10 +41,6 @@ namespace Covid19Radar.Droid
                    .Build());
             ExposureNotification.ConfigureBackgroundWorkRequest(repeatInterval, requestBuilder);
 
-            Xamarin.Forms.Forms.SetFlags("RadioButton_Experimental");
-            Xamarin.Essentials.Platform.Init(this, savedInstanceState);
-            Xamarin.Forms.Forms.Init(this, savedInstanceState);
-            Xamarin.Forms.FormsMaterial.Init(this, savedInstanceState);
 
             FFImageLoading.Forms.Platform.CachedImageRenderer.Init(enableFastRenderer: true);
             global::FFImageLoading.ImageService.Instance.Initialize(new FFImageLoading.Config.Configuration());
