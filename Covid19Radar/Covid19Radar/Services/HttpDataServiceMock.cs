@@ -13,6 +13,7 @@ using System.Threading.Tasks;
 using System.Text.RegularExpressions;
 using System.Linq;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using Covid19Radar.Common;
 
 namespace Covid19Radar.Services
@@ -29,13 +30,36 @@ namespace Covid19Radar.Services
         }
 
         // copy from ./HttpDataService.cs
+        //string saveETag = null;
+        //void IHttpDataService.SetETagIfNoneMatch(string etag)
+        //{
+        //    saveETag = etag;
+        //}
+        //string IHttpDataService.LastETag()
+        //{
+        //    return saveETag;
+        //}
         private async Task<string> GetCdnAsync(string url, CancellationToken cancellationToken)
         {
-            Task<HttpResponseMessage> response = downloadClient.GetAsync(url, cancellationToken);
-            HttpResponseMessage result = await response;
+            // Task<HttpResponseMessage> response = downloadClient.GetAsync(url, cancellationToken);
+            //HttpResponseMessage result = await response;
+            var etag = Xamarin.Essentials.Preferences.Get("ETag", "");
+            var request = new HttpRequestMessage(HttpMethod.Get, url);
+            if (! string.IsNullOrEmpty(etag))
+            {
+                request.Headers.TryAddWithoutValidation("If-None-Match", etag);
+            }
+            var result = await downloadClient.SendAsync(request);
+            var status = result.StatusCode;
+            var headers = result.Headers;
+            var etags = headers.GetValues("ETag");
+            System.Diagnostics.Debug.WriteLine(etags.ToString());
+            etag = etags.First();
+            Xamarin.Essentials.Preferences.Set("ETag", etag);
+
             await result.Content.ReadAsStringAsync();
 
-            if (result.StatusCode == System.Net.HttpStatusCode.OK)
+            if (status == System.Net.HttpStatusCode.OK)
             {
                 return await result.Content.ReadAsStringAsync();
             }

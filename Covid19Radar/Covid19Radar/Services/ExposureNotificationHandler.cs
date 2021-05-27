@@ -172,14 +172,18 @@ namespace Covid19Radar.Services
                     await submitBatches(downloadedFiles);
 
                     exposureNotificationService.SetLastProcessTekTimestamp(serverRegion, newCreated);
-                    if (Xamarin.Essentials.Preferences.Get("back_ground",false)) {
+                    var etag = Xamarin.Essentials.Preferences.Get("ETag", "");
+                    exposureNotificationService.SetETag(serverRegion, etag);
+
+                    if (Xamarin.Essentials.Preferences.Get("back_ground", false))
+                    {
                         exposureNotificationService.SetLastProcessTekTimestampBg(serverRegion, newCreated);
                     }
                     exposureNotificationService.SetLastProcessTekListCount(serverRegion, _tekListCount);
                     exposureNotificationService.SetLastDownloadCount(serverRegion, downloadedFiles.Count);
                     exposureNotificationService.SetLastDownloadDateTime(serverRegion, DateTime.Now);
 
-                    loggerService.Info($"region: {serverRegion}, lastCreated: {newCreated}");
+                    loggerService.Info($"region: {serverRegion}, newCreated: {newCreated}, ETag: {etag}");
 
                     // delete all temporary files
                     foreach (var file in downloadedFiles)
@@ -232,7 +236,9 @@ namespace Covid19Radar.Services
             }
 
             var httpDataService = HttpDataService;
-
+            //var exposureNotificationService = ExposureNotificationService;
+            //httpDataService.SetETagIfNoneMatch(ExposureNotificationService.GetETag(region));
+            Xamarin.Essentials.Preferences.Set("ETag", ExposureNotificationService.GetETag(region));
             List<TemporaryExposureKeyExportFileModel> tekList = await httpDataService.GetTemporaryExposureKeyList(region, cancellationToken);
             _tekListCount = tekList.Count;
             if (tekList.Count == 0)

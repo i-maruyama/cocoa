@@ -183,6 +183,10 @@ namespace Covid19Radar.Services
         {
             Task<HttpResponseMessage> response = downloadClient.GetAsync(url, cancellationToken);
             HttpResponseMessage result = await response;
+            HttpResponseHeaders headers = result.Headers;
+            EntityTagHeaderValue etag = headers.ETag;
+            System.Diagnostics.Debug.WriteLine(etag.ToString());
+
             await result.Content.ReadAsStringAsync();
 
             if (result.StatusCode == System.Net.HttpStatusCode.OK)

@@ -6,8 +6,10 @@ using System;
 using System.Linq;
 using Acr.UserDialogs;
 using Covid19Radar.Services;
+using Covid19Radar.Services.Logs;
 using Prism.Navigation;
 using Xamarin.Forms;
+using Xamarin.Essentials;
 
 namespace Covid19Radar.ViewModels
 {
@@ -16,6 +18,9 @@ namespace Covid19Radar.ViewModels
         private readonly IUserDataService userDataService;
         private readonly ITermsUpdateService termsUpdateService;
         private readonly IExposureNotificationService exposureNotificationService;
+        private readonly IEssentialsService essentialsService;
+        private readonly ILogViewService logViewService;
+
 
         private string _debugInfo;
 
@@ -39,6 +44,37 @@ namespace Covid19Radar.ViewModels
         {
             get { return _debugInfo; }
             set { SetProperty(ref _debugInfo, value); }
+        }
+        public string[] BatteryInfo()
+        {
+            var s = new[]
+            {
+                "BatteryLevel: " + (Battery.ChargeLevel*100.0).ToString(),
+                "BatteryState: " + Battery.State.ToString(),
+                "BatterySource: " + Battery.PowerSource.ToString(),
+                "BatteryEnergySaver: " + Battery.EnergySaverStatus.ToString(),
+            };
+            return (s);
+        }
+        public string[] EssentialInfo()
+        {
+            var s = new[]
+            {
+                "platform: " + essentialsService.Platform,
+                "platform_version: " + essentialsService.PlatformVersion,
+                "model: " + essentialsService.Model,
+                "device_type: " + essentialsService.DeviceType ,
+                "app_version: " + essentialsService.AppVersion,
+                "build_number:" +  essentialsService.BuildNumber,
+            };
+            return (s);
+        }
+        public string[] LogInfo()
+        {
+            var s = logViewService.LogViewLs();
+            var full = logViewService.LogViewTimeInitialize();
+            var tek = logViewService.LogViewTimeLastProcessTek();
+            return s.Concat(full).Concat(new string[] { "---tek---" }).Concat(tek).ToArray();
         }
         public async void Info(string ex = "")
         {
@@ -93,6 +129,7 @@ namespace Covid19Radar.ViewModels
             //var dtBg = DateTimeOffset.FromUnixTimeMilliseconds(ticksBg).ToOffset(new TimeSpan(9, 0, 0));
             //var lastProcessTekTimestampBg = dtBg.ToLocalTime().ToString("F");
             var strng = exposureNotificationService.GetLastProcessTekTimestampBg(region).TrimEnd(',');
+            var etag = exposureNotificationService.GetETag(region);
             var stlist = strng.Split(",").ToList().Select(x => TimeString4s(x));
             var lastProcessTekTimestampBg = string.Join(", ", stlist);
             var exposureNotificationStatus = await Xamarin.ExposureNotifications.ExposureNotification.IsEnabledAsync();
@@ -103,7 +140,7 @@ namespace Covid19Radar.ViewModels
                 "Region: " + string.Join(",", AppSettings.Instance.SupportedRegions), "CdnUrl: " + AppSettings.Instance.CdnUrlBase,
                 "ApiUrl: " + AppSettings.Instance.ApiUrlBase, "Agree: " + agree, "StartDate: " + userDataService.GetStartDate().ToLocalTime().ToString("F"),
                 "DaysOfUse: " + userDataService.GetDaysOfUse(), "ExposureCount: " + exposureNotificationService.GetExposureCount(),
-                "LastProcessTek: " + lastProcessTekTimestamp, " (long): " + ticks, "ENstatus: " + exposureNotificationStatus,
+                "LastProcessTek: " + lastProcessTekTimestamp, " (long): " + ticks, "ETag: " + etag,"ENstatus: " + exposureNotificationStatus,
                 "ENmessage: " + exposureNotificationMessage, "Now: " + DateTime.Now.ToLocalTime().ToString("F"), ex,
                 "---new---",
                 "fg: " + Xamarin.Essentials.Preferences.Get("fore_ground",false).ToString(),
@@ -114,15 +151,19 @@ namespace Covid19Radar.ViewModels
                 "TekListCount: " + exposureNotificationService.GetLastProcessTekListCount(region).ToString(),
                 "DownloadCount: " + exposureNotificationService.GetLastDownloadCount(region).ToString(),
                 "-------"
-            };
+            }.Concat(EssentialInfo()).Concat(BatteryInfo()).Concat(LogInfo()).ToArray();
             DebugInfo = string.Join(Environment.NewLine, str);
         }
-        public DebugPageViewModel(INavigationService navigationService, IUserDataService userDataService, ITermsUpdateService termsUpdateService, IExposureNotificationService exposureNotificationService) : base(navigationService)
+        public DebugPageViewModel(INavigationService navigationService, IUserDataService userDataService, ITermsUpdateService termsUpdateService, IExposureNotificationService exposureNotificationService, IEssentialsService essentialsService
+             , ILogViewService logViewService
+            ) : base(navigationService)
         {
             Title = "Title:DebugPage";
             this.userDataService = userDataService;
             this.termsUpdateService = termsUpdateService;
             this.exposureNotificationService = exposureNotificationService;
+            this.essentialsService = essentialsService;
+            this.logViewService = logViewService;
         }
         public override void Initialize(INavigationParameters parameters)
         {

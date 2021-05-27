@@ -17,6 +17,8 @@ namespace Covid19Radar.Services
     {
         Task<bool> PostRegisterUserAsync();
 
+        //string LastETag();
+        //void SetETagIfNoneMatch(string etag);
         Task<HttpStatusCode> PutSelfExposureKeysAsync(DiagnosisSubmissionParameter request);
 
         Task<List<TemporaryExposureKeyExportFileModel>> GetTemporaryExposureKeyList(string region, CancellationToken cancellationToken);

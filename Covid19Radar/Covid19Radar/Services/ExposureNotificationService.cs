@@ -25,11 +25,13 @@ namespace Covid19Radar.Services
         void RemoveConfiguration();
 
         long GetLastProcessTekTimestamp(string region);
+        string GetETag(string region);
         string GetLastProcessTekTimestampBg(string region);
         long GetLastProcessTekListCount(string region);
         long GetLastDownloadCount(string region);
         DateTime GetLastDownloadDateTime(string region);
         void SetLastProcessTekTimestamp(string region, long created);
+        void SetETag(string region, string created);
         void SetLastProcessTekTimestampBg(string region, long created);
         void SetLastProcessTekListCount(string region, long created);
         void SetLastDownloadCount(string region, long created);
@@ -192,6 +194,11 @@ namespace Covid19Radar.Services
         {
             return GetKey<long>(region, PreferenceKey.LastProcessTekTimestamp, 0L);
         }
+        public string GetETag(string region)
+        {
+            return GetKey<string>(region, PreferenceKey.ETag, "");
+        }
+
         public string GetLastProcessTekTimestampBg(string region)
         {
             return GetKey<string>(region, PreferenceKey.LastProcessTekTimestampBg, "");
@@ -226,6 +233,10 @@ namespace Covid19Radar.Services
         public void SetLastProcessTekTimestamp(string region, long created)
         {
             SetKey<long>(region, PreferenceKey.LastProcessTekTimestamp, created);
+        }
+        public void SetETag(string region, string created)
+        {
+            SetKey<string>(region, PreferenceKey.ETag, created);
         }
 
         public void SetLastProcessTekTimestampBg(string region, long created)
@@ -265,6 +276,7 @@ namespace Covid19Radar.Services
         {
             loggerService.StartMethod();
             preferencesService.RemoveValue(PreferenceKey.LastProcessTekTimestamp);
+            preferencesService.RemoveValue(PreferenceKey.ETag);
             preferencesService.RemoveValue(PreferenceKey.LastProcessTekTimestampBg);
             preferencesService.RemoveValue(PreferenceKey.LastProcessTekListCount);
             preferencesService.RemoveValue(PreferenceKey.LastDownloadCount);

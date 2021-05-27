@@ -9,6 +9,7 @@ namespace Covid19Radar.Common
         // for preferences
         public static string StartDateTime = "StartDateTime";
         public static string LastProcessTekTimestamp = "LastProcessTekTimestamp";
+        public static string ETag = "Etag";
         public static string LastProcessTekTimestampBg = "LastProcessTekTimestampBg";
         public static string LastProcessTekListCount = "LastTekListCount";
         public static string LastDownloadCount = "LastDownloadCount";

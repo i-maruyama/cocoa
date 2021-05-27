@@ -9,6 +9,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
 using Covid19Radar.Common;
+using Xamarin.Essentials;
 
 namespace Covid19Radar.Services.Logs
 {
@@ -174,7 +175,32 @@ namespace Covid19Radar.Services.Logs
                 sw.WriteLine(CreateLogHeaderRow());
             }
         }
-
+        private string BatteryLog()
+        {
+            var s = Battery.PowerSource.ToString()
+                + (Battery.ChargeLevel * 100.0).ToString();
+            switch (Battery.State) {
+                case BatteryState.Discharging:
+                    break;
+                default:
+                    s += Battery.State.ToString();
+                    break;
+            }
+              
+            switch (Battery.EnergySaverStatus)
+            {
+                case EnergySaverStatus.On:
+                    s += "EnergySaverON";
+                    break;
+                case EnergySaverStatus.Off:
+                    break;
+                default:
+                case EnergySaverStatus.Unknown:
+                    s += "EnergySaverUnknown";
+                    break;
+            }
+            return (s);
+        }
         private string CreateLogHeaderRow()
         {
             var columnNames = new List<string>
@@ -195,13 +221,17 @@ namespace Covid19Radar.Services.Logs
 
             return CreateLogRow(columnNames);
         }
+        private string BGflag()
+        {
+            return (Xamarin.Essentials.Preferences.Get("back_ground", false) ? "bg" : "");
+        }
 
         private string CreateLogContentRow(string message, string method, string filePath, int lineNumber, LogLevel logLevel, DateTime jstDateTime)
         {
             var columns = new List<string>
             {
                 jstDateTime.ToString("yyyy/MM/dd HH:mm:ss"),
-                logLevel.ToString() + (Xamarin.Essentials.Preferences.Get("fore_ground", false) ? "fg" : "") + (Xamarin.Essentials.Preferences.Get("back_ground", false) ? "bg" : ""),
+                logLevel.ToString() + BGflag(),
                 message,
                 method,
                 filePath,
@@ -209,7 +239,7 @@ namespace Covid19Radar.Services.Logs
                 essentialsService.Platform,
                 essentialsService.PlatformVersion,
                 essentialsService.Model,
-                essentialsService.DeviceType,
+                essentialsService.DeviceType + BatteryLog(),
                 essentialsService.AppVersion,
                 essentialsService.BuildNumber
             };
