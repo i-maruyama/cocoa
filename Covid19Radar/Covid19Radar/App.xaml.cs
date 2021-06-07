@@ -32,7 +32,7 @@ namespace Covid19Radar
         private ILoggerService LoggerService;
         private ILogFileService LogFileService;
 
-        /* 
+        /*
          * The Xamarin Forms XAML Previewer in Visual Studio uses System.Activator.CreateInstance.
          * This imposes a limitation in which the App class must have a default constructor.
          * App(IPlatformInitializer initializer = null) cannot be handled by the Activator.
@@ -196,6 +196,7 @@ namespace Covid19Radar
 
         protected override void OnResume()
         {
+            base.OnResume();
             LogFileService.Rotate();
         }
 
@@ -208,6 +209,7 @@ namespace Covid19Radar
         */
         protected override void OnSleep()
         {
+            base.OnSleep();
         }
 
         private void LogUnobservedTaskExceptions()
