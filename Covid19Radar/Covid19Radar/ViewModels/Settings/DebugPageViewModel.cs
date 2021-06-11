@@ -4,7 +4,9 @@
 
 using System;
 using Acr.UserDialogs;
+using Covid19Radar.Model;
 using Covid19Radar.Services;
+using Covid19Radar.Views;
 using Prism.Navigation;
 using Xamarin.Forms;
 
@@ -156,5 +158,31 @@ namespace Covid19Radar.ViewModels
             Application.Current.Quit();
             DependencyService.Get<ICloseApplication>().closeApplication();
         });
+        public Command OnClickReAgreePrivacyPolicyPage => new Command(async () =>
+        {
+            var termsUpdateInfo = await termsUpdateService.GetTermsUpdateInfo();
+            var param = new NavigationParameters
+                {
+                    { "updatePrivacyPolicyInfo", termsUpdateInfo.PrivacyPolicy }
+                };
+            _ = await NavigationService.NavigateAsync(nameof(ReAgreePrivacyPolicyPage), param);
+        });
+        public Command OnClickReAgreeTermsOfServicePage => new Command(async () =>
+        {
+            var termsUpdateInfo = await termsUpdateService.GetTermsUpdateInfo();
+            if(termsUpdateInfo.TermsOfService == null)
+            {
+                termsUpdateInfo.TermsOfService = new TermsUpdateInfoModel.Detail {
+                    Text = "This is dummy text provided by DebugPage.  See https://github.com/cocoa-mhlw/cocoa/issues/85",
+                    UpdateDateTime = DateTime.Now
+                };
+            }
+            var param = new NavigationParameters
+                {
+                    { "updateInfo", termsUpdateInfo }
+                };
+            _ = await NavigationService.NavigateAsync(nameof(ReAgreeTermsOfServicePage), param);
+        });
+
     }
 }
